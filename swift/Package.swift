@@ -11,7 +11,10 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.25.0")
+        .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.25.0"),
+        // Tokenization: MLXEngine has no internal tokenizer, so the Qwen3
+        // tokenizer ships with this package via swift-transformers.
+        .package(url: "https://github.com/huggingface/swift-transformers", from: "0.1.13"),
     ],
     targets: [
         .target(
@@ -20,6 +23,7 @@ let package = Package(
                 .product(name: "MLX", package: "mlx-swift"),
                 .product(name: "MLXNN", package: "mlx-swift"),
                 .product(name: "MLXFast", package: "mlx-swift"),
+                .product(name: "Transformers", package: "swift-transformers"),
             ],
             path: "Sources/MossSoundEffectMLX"
         ),

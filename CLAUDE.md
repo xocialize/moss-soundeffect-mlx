@@ -71,6 +71,15 @@ MLX is lazy — **unevaluated tensors serialize as zeros, no error.** Call `mx.e
 - GPU-state classes `@unchecked Sendable` + `NSLock`; everything `Float32`/`Float16`/`BFloat16` (`Float64` crashes the GPU).
 - Symptom "loads fine, `.noUnusedKeys` passes, garbage *only on Swift*" → it's one of the above before it's a layer-translation bug.
 
+## Tokenization (Swift)
+
+**MLXEngine has no internal tokenization** (confirmed by Dustin 2026-06-11), so the
+Qwen3 tokenizer ships inside the Swift package via swift-transformers
+(`WanPrompter.swift`). Parity vs HF is exact (token-id match incl. `""` → 0 tokens).
+Known limitation: upstream's `ftfy.fix_text` mojibake repair is not ported — a no-op
+for well-formed UTF-8 prompts. swift-transformers needs a `config.json` beside the
+tokenizer files; `WanPrompter.loadTokenizer` stages one automatically.
+
 ## Build / env
 
 - Swift: build via **`xcodebuild`** against the workspace. SwiftPM CLI is not used for anything touching MLX/Metal. (Non-GPU test lane needing `swift test` → metallib-rename escape hatch in skill `repo-layout.md`.)

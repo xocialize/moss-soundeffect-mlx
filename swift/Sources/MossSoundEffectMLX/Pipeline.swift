@@ -92,11 +92,52 @@ public final class MossSoundEffectPipeline {
     public let scheduler: FlowMatchScheduler
     public let sampleRate = 48000
     public let maxInferenceSeconds = 30
+    /// Tokenization ships in-package (swift-transformers) — MLXEngine has no
+    /// internal tokenizer. Optional so parity tests can inject golden contexts.
+    public var prompter: WanPrompter?
 
-    public init(dit: WanAudioModel, vae: DAC) {
+    public init(dit: WanAudioModel, vae: DAC, prompter: WanPrompter? = nil) {
         self.dit = dit
         self.vae = vae
+        self.prompter = prompter
         self.scheduler = FlowMatchScheduler(shift: 5.0, sigmaMin: 0.0, extraOneStep: true)
+    }
+
+    /// Full text -> audio path, mirroring the Python facade: appends the
+    /// trained " duration: X.Xs" suffix, denoises the FULL 30 s latent, and
+    /// crops the waveform to `seconds`.
+    public func generate(
+        prompt: String,
+        seconds: Double = 10.0,
+        negativePrompt: String = "",
+        numInferenceSteps: Int = 100,
+        cfgScale: Float = 4.0,
+        sigmaShift: Float = 5.0,
+        seed: UInt64 = 0,
+        appendDurationSuffix: Bool = true
+    ) throws -> MLXArray {
+        guard let prompter else {
+            throw NSError(
+                domain: "MossSoundEffectMLX", code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "pipeline has no prompter — construct with WanPrompter"])
+        }
+        let secondsRounded = (seconds * 10).rounded() / 10
+        precondition(secondsRounded > 0 && secondsRounded <= Double(maxInferenceSeconds))
+        let fullPrompt = appendDurationSuffix
+            ? "\(prompt.trimmingCharacters(in: .whitespacesAndNewlines)) duration: \(String(format: "%.1f", secondsRounded))s"
+            : prompt
+        let context = prompter.encodePrompt([fullPrompt])
+        let contextNega = prompter.encodePrompt([negativePrompt])
+
+        let latentLength = sampleRate * maxInferenceSeconds / vae.config.hopLength
+        MLXRandom.seed(seed)  // NB: not torch/python-RNG compatible
+        let noise = MLXRandom.normal([1, vae.config.latentDim, latentLength])
+
+        let audio = generate(
+            context: context, contextNega: contextNega, noise: noise,
+            numInferenceSteps: numInferenceSteps, cfgScale: cfgScale, sigmaShift: sigmaShift)
+        let outputSamples = Int(Double(sampleRate) * secondsRounded)
+        return audio[0..., 0..., 0 ..< outputSamples]
     }
 
     /// Denoise injected noise under injected (already-encoded) contexts and
