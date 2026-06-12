@@ -4,9 +4,10 @@ MLX / MLX-Swift port of [MOSS-SoundEffect-v2.0](https://huggingface.co/OpenMOSS-
 (OpenMOSS) — text → sound effects (foley / ambience / creature / action), 48 kHz, ≤ 30 s clips —
 for Apple Silicon. Apache-2.0, matching upstream.
 
-**Status: PUBLISHED (Python pipeline) — Stage 2 parity-locked, GPU-validated,
-perceptually reviewed, weights live on mlx-community. Stage 3 (Swift) nearly
-complete: DiT/VAE/scheduler validated vs goldens; slow e2e + tokenizer pending.**
+**Status: COMPLETE — all handoff acceptance criteria closed.** Python oracle
+parity-locked; weights live on mlx-community; Swift port fully validated vs
+goldens (per-module + e2e denoise loop); MLXEngine `soundEffect` capability
+package shipped and live-validated against the published checkpoints.
 
 Weights:
 [mlx-community/MOSS-SoundEffect-v2.0-bf16](https://huggingface.co/mlx-community/MOSS-SoundEffect-v2.0-bf16) ·
