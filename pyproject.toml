@@ -1,0 +1,36 @@
+[project]
+name = "moss-sfx-mlx"
+version = "0.1.0"
+description = "MLX port of MOSS-SoundEffect-v2.0 (text -> 48 kHz sound effects) for Apple Silicon"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+    "mlx>=0.30",
+    "huggingface-hub",
+    "safetensors",
+    "numpy",
+    "transformers",
+]
+
+[project.optional-dependencies]
+# PyTorch is only needed to run the parity suite against the upstream reference.
+parity = [
+    "torch",
+    "einops",
+    "descript-audiotools",
+    "diffusers==0.32.0",
+    "ftfy",
+    "regex",
+    "pytest",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["moss_sfx_mlx*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

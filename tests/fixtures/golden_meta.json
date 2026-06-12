@@ -1,0 +1,14 @@
+{
+ "prompt": "a heavy wooden door creaks open slowly",
+ "seconds": 10.0,
+ "steps": 10,
+ "cfg": 4.0,
+ "sigma_shift": 5.0,
+ "noise_seed": 42,
+ "velocity_timesteps": [
+  1000.0,
+  500.0
+ ],
+ "dtype": "float32",
+ "note": "noise injected from numpy default_rng(42); context via full prompter path"
+}

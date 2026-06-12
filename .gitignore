@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+output/
+swift/.build/
+tests/fixtures/capture.log
+*.egg-info/
