@@ -63,3 +63,11 @@ int4 per-pass cosine vs bf16: **0.999425** (gate 0.99). Noise-decode periodicity
 check clean (frame-boundary autocorr ~0.01). Perceptual A/B batch (10 prompts,
 100 steps, `output/ab_batch/`): **human-reviewed, passed** (2026-06-11 — correct
 content, correct duration, no tonal artifacts).
+
+## Swift package
+
+The MLX-Swift port now lives in its own repo (SPM-consumable):
+[xocialize/moss-soundeffect-mlx-swift](https://github.com/xocialize/moss-soundeffect-mlx-swift).
+The MLXEngine capability package is
+[xocialize/mlx-moss-soundeffect-swift](https://github.com/xocialize/mlx-moss-soundeffect-swift).
+This repo remains the parity oracle: golden fixtures, conversion tooling, upstream findings.
